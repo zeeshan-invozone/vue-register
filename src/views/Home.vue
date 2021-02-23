@@ -1,9 +1,6 @@
 <template>
   <div class="home">
-    THis is an Home?
-    <div>
-      <v-btn rounded class="black white--text"> Submit</v-btn>
-    </div>
+    This is an Home
   </div>
 </template>
 

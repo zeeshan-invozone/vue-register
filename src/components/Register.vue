@@ -1,55 +1,155 @@
 <template>
-  <v-card class="register-main">
-    <div class="register red white--text">
-      <h1>Register</h1>
-    </div>
-    <v-form ref="form" v-model="valid" lazy-validation>
-      <v-text-field
-        v-model="name"
-        :counter="10"
-        :rules="nameRules"
-        label="Name"
-        required
-      ></v-text-field>
-
-      <v-text-field
-        v-model="email"
-        :rules="emailRules"
-        label="E-mail"
-        required
-      ></v-text-field>
-
-      <v-select
-        v-model="select"
-        :items="items"
-        :rules="[(v) => !!v || 'Item is required']"
-        label="Item"
-        required
-      ></v-select>
-
-      <v-checkbox
-        v-model="checkbox"
-        :rules="[(v) => !!v || 'You must agree to continue!']"
-        label="Do you agree?"
-        required
-      ></v-checkbox>
-
-      <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
-        Submit
-      </v-btn>
-    </v-form>
-  </v-card>
+  <v-row justify="center">
+    <v-col sm="8" md="4">
+      <v-card ref="form">
+        <h2 class="register">Register</h2>
+        <v-card-text>
+          <v-text-field
+            ref="name"
+            v-model="name"
+            :rules="[() => !!name || 'This field is required']"
+            :error-messages="errorMessages"
+            label="Full Name"
+            placeholder="John Doe"
+            required
+          ></v-text-field>
+          <v-text-field
+            ref="email"
+            v-model="email"
+            :rules="[() => !!email || 'Email is required']"
+            label="Email"
+            type="email"
+            required
+          >
+          </v-text-field>
+          <v-text-field
+            ref="password"
+            v-model="password"
+            :rules="[() => !!password || 'password is required']"
+            label="Password"
+            type="password"
+            required
+          >
+          </v-text-field>
+          <v-text-field
+            ref="address"
+            v-model="address"
+            :rules="[
+              () => !!address || 'This field is required',
+              () =>
+                (!!address && address.length <= 25) ||
+                'Address must be less than 25 characters',
+              addressCheck,
+            ]"
+            label="Address Line"
+            placeholder="Snowy Rock Pl"
+            counter="25"
+            required
+          ></v-text-field>
+        </v-card-text>
+        <v-divider class="mt-2"></v-divider>
+        <v-card-actions>
+          <v-btn text>
+            Cancel
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-slide-x-reverse-transition>
+            <v-tooltip v-if="formHasErrors" left>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  class="my-0"
+                  v-bind="attrs"
+                  @click="resetForm"
+                  v-on="on"
+                >
+                  <v-icon>mdi-refresh</v-icon>
+                </v-btn>
+              </template>
+              <span>Refresh form</span>
+            </v-tooltip>
+          </v-slide-x-reverse-transition>
+          <v-btn color="primary" text @click="submit">
+            Submit
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 <script>
-export default {};
+import firebase from '../firebase/firebase.config';
+export default {
+  data: () => ({
+    errorMessages: '',
+    name: null,
+    address: null,
+    password: null,
+    email: null,
+    formHasErrors: false,
+  }),
+
+  computed: {
+    form() {
+      return {
+        name: this.name,
+        address: this.address,
+        email: this.email,
+        password: this.password,
+      };
+    },
+  },
+
+  watch: {
+    name() {
+      this.errorMessages = '';
+    },
+  },
+
+  methods: {
+    addressCheck() {
+      this.errorMessages =
+        this.address && !this.name ? `Hey! I'm required` : '';
+
+      return true;
+    },
+    resetForm() {
+      this.errorMessages = [];
+      this.formHasErrors = false;
+
+      Object.keys(this.form).forEach((f) => {
+        this.$refs[f].reset();
+      });
+    },
+    async submit() {
+      console.log(this.name, this.email, this.password, this.address);
+      this.formHasErrors = false;
+      Object.keys(this.form).forEach((f) => {
+        if (!this.form[f]) this.formHasErrors = true;
+        this.$refs[f].validate(true);
+      });
+      const res = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.email, this.password);
+
+      const { uid } = await firebase.auth().currentUser;
+      if (uid) {
+        await firebase
+          .firestore()
+          .collection('user')
+          .doc(uid)
+          .set({ name: this.name, address: this.address });
+        this.$router.push('/login');
+        console.log('user successfully created');
+        console.log('res', res);
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
 .register {
   text-align: center;
-}
-.register-main {
-  width: 30%;
-  padding: 15px;
 }
 </style>

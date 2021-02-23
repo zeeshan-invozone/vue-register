@@ -23,17 +23,31 @@
 
       <v-spacer></v-spacer>
 
-      <span class="mr-2">Latest Release</span>
+      <h4 class="mr-2 logout" @click="logout">Logout</h4>
     </v-app-bar>
 
     <v-main>
-      <router-view></router-view>
+      <router-view class="main-app"></router-view>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import firebase from './firebase/firebase.config';
 export default {
   name: 'App',
+  methods: {
+    async logout() {
+      console.log('User logout successfully');
+      await firebase.auth().signOut();
+      this.$router.push('/login');
+    },
+  },
 };
 </script>
+
+<style scoped>
+.logout {
+  cursor: pointer;
+}
+</style>
