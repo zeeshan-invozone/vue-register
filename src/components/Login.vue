@@ -38,7 +38,6 @@
   </v-row>
 </template>
 <script>
-import firebase from '../firebase/firebase.config';
 export default {
   data: () => ({
     errorMessages: '',
@@ -77,21 +76,12 @@ export default {
         if (!this.form[f]) this.formHasErrors = true;
         this.$refs[f].validate(true);
       });
-      try {
-        await firebase
-          .auth()
-          .signInWithEmailAndPassword(this.email, this.password);
-        const cu = firebase.auth().currentUser;
-        if (cu) {
-          console.log('sign in successfully');
-          this.islogin = true;
-          this.$router.push('/');
-          return cu;
-        }
-      } catch (error) {
-        console.log(error.message);
-        return error.message;
-      }
+      let uri = 'http://localhost:5000/user/login';
+      const response = await this.axios.post(uri, {
+        email: this.email,
+        password: this.password,
+      });
+      console.log('login res', response);
     },
   },
 };

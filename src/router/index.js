@@ -4,8 +4,9 @@ import Home from '../views/Home.vue';
 import About from '../views/About.vue';
 import Login from '../components/Login.vue';
 import Register from '../components/Register.vue';
-Vue.use(VueRouter);
+import AddTodo from '../components/todo/createtodo.vue';
 
+Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
@@ -26,6 +27,11 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register,
+  },
+  {
+    path: '/add-new',
+    name: 'AddTodo',
+    component: AddTodo,
   },
 ];
 

@@ -78,7 +78,6 @@
   </v-row>
 </template>
 <script>
-import firebase from '../firebase/firebase.config';
 export default {
   data: () => ({
     errorMessages: '',
@@ -122,27 +121,21 @@ export default {
       });
     },
     async submit() {
-      console.log(this.name, this.email, this.password, this.address);
+      console.log('submit');
       this.formHasErrors = false;
       Object.keys(this.form).forEach((f) => {
         if (!this.form[f]) this.formHasErrors = true;
         this.$refs[f].validate(true);
       });
-      const res = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.email, this.password);
 
-      const { uid } = await firebase.auth().currentUser;
-      if (uid) {
-        await firebase
-          .firestore()
-          .collection('user')
-          .doc(uid)
-          .set({ name: this.name, address: this.address });
-        this.$router.push('/login');
-        console.log('user successfully created');
-        console.log('res', res);
-      }
+      let uri = 'http://localhost:5000/user/register';
+      const result = await this.axios.post(uri, {
+        name: this.name,
+        address: this.address,
+        email: this.email,
+        password: this.password,
+      });
+      console.log('result', result);
     },
   },
 };
