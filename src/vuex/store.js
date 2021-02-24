@@ -13,21 +13,18 @@ const store = new Vuex.Store({
 
   actions: {
     async addTodo({ commit }, todo) {
-      commit('newTodo', todo);
+      commit('ADD_NEW_TODO', todo);
     },
     async deleteTodo({ commit }, id) {
-      commit('delTodo', id);
+      commit('DELETE_TODO', id);
     },
   },
   mutations: {
-    newTodo: (state, todo) => {
-      console.log('state', state);
-      console.log('todo', todo);
+    ADD_NEW_TODO: (state, todo) => {
       state.todolist.unshift(todo);
     },
-    delTodo: (state, id) => {
-      console.log('id', id);
-      state.todolist.filter((todo) => todo.id != id);
+    DELETE_TODO: (state, id) => {
+      state.todolist = state.todolist.filter((todo) => todo.id !== id);
     },
   },
 });

@@ -26,7 +26,7 @@
                 <span class="subheading mr-5">{{ todo.subject }}</span>
               </div>
               <v-spacer></v-spacer>
-              <v-icon @click="deleteTodo(todo.id)">mdi-close</v-icon>
+              <v-icon @click.prevent="deleteSubject(todo.id)">mdi-close</v-icon>
             </v-list-item>
           </v-list>
         </div>
@@ -50,8 +50,11 @@ export default {
     ...mapActions(['addTodo'], ['deleteTodo']),
     createNewTodo() {
       this.isadd = true;
-      const randomId = Math.floor(Math.random() * 9 + 1);
+      const randomId = Math.floor(Math.random() * 100 + 1);
       this.addTodo({ id: randomId, name: this.name, subject: this.subject });
+    },
+    deleteSubject(todoId) {
+      this.$store.dispatch('deleteTodo', todoId);
     },
   },
   computed: mapGetters(['allTodos']),
