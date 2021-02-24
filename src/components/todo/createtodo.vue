@@ -20,13 +20,13 @@
         <v-divider></v-divider>
         <div v-if="isadd">
           <v-list>
-            <v-list-item v-for="todo in todolist" :key="todo.name">
+            <v-list-item v-for="todo in allTodos" :key="todo.id">
               <div>
                 <span class="text-uppercase bold mr-5">{{ todo.name }}</span>
                 <span class="subheading mr-5">{{ todo.subject }}</span>
               </div>
               <v-spacer></v-spacer>
-              <v-icon @click="handleDel">mdi-close</v-icon>
+              <v-icon @click="deleteTodo(todo.id)">mdi-close</v-icon>
             </v-list-item>
           </v-list>
         </div>
@@ -36,6 +36,7 @@
   </v-row>
 </template>
 <script>
+import { mapGetters, mapActions } from 'vuex';
 export default {
   data() {
     return {
@@ -46,14 +47,14 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['addTodo'], ['deleteTodo']),
     createNewTodo() {
-      this.todolist.push({ name: this.name, subject: this.subject });
       this.isadd = true;
-    },
-    handleDel() {
-      console.log('del');
+      const randomId = Math.floor(Math.random() * 9 + 1);
+      this.addTodo({ id: randomId, name: this.name, subject: this.subject });
     },
   },
+  computed: mapGetters(['allTodos']),
 };
 </script>
 <style scoped></style>>
